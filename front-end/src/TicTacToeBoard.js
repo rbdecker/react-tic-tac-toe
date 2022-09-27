@@ -1,41 +1,13 @@
 import { useState, useEffect } from 'react';
 
-const getStartingMatrix = () => {
-    return [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-    ];
-}
-
-const TicTacToeBoard = () => {
-    const [currentPlayer, setCurrentPlayer] = useState('X');
-    const [playerXMoves, setPlayerXMoves] = useState(getStartingMatrix());
-    const [playerOMoves, setPlayerOMoves] = useState(getStartingMatrix());
-
-    useEffect(() => {
-        console.log({ 
-            playerXMoves,
-            playerOMoves,
-        });
-    }, [playerXMoves, playerOMoves]);
-
-    const togglePlayer = () => {
-        setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X');
-    }
-
-    const handleTurn = (row, column) => {
-        if (currentPlayer === 'X') {
-            const newMoves = [...playerXMoves];
-            newMoves[row][column] = 1;
-            setPlayerXMoves(newMoves);
-        } else {
-            const newMoves = [...playerOMoves];
-            newMoves[row][column] = 1;
-            setPlayerOMoves(newMoves);            
-        }
-
-        togglePlayer();
+const TicTacToeBoard = ({
+    playerXMoves,
+    playerOMoves,
+    onClickCell,
+}) => {
+    const spaceIsTaken = (row, column) => {
+        return playerXMoves[row][column]
+            || playerOMoves[row][column];
     }
 
     const cellStyles = [
@@ -46,15 +18,20 @@ const TicTacToeBoard = () => {
 
     return (
         <>
+        <h1>Tic-Tac-Toe</h1>
         <table>
             <tbody>
-                {[0, 1, 2].map((row) => (
+                {[0, 1, 2].map(row => (
                     <tr key={row}>
-                        {[0, 1, 2].map((column, index) => (
+                        {[0, 1, 2].map(column => (
                             <td 
                                 key={`${row},${column}`}
-                                className={cellStyles[row][column]}
-                                onClick={() => handleTurn(row, column)}
+                                className={`${cellStyles[row][column]} {spaceIsTaken} empty-cell`} 
+                                onClick={() => {
+                                    if (!spaceIsTaken(row, column) && onClickCell(row, column)) {
+                                        onClickCell(row, column);
+                                    }
+                                }}
                             >
                                 {playerXMoves[row][column] ? 'X' : ''}
                                 {playerOMoves[row][column] ? 'O' : ''}
@@ -64,7 +41,6 @@ const TicTacToeBoard = () => {
                 ))}
             </tbody>
         </table>
-        <h3>It is Player {currentPlayer}'s turn</h3>
         </>
     )
 

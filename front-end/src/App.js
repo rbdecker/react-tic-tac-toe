@@ -1,11 +1,10 @@
-import TicTacToeBoard from './TicTacToeBoard';
 import './App.css';
+import TicTacToeGame from './TicTacToeGame';
 
 function App() {
   return (
     <div className="content-container">
-      <h1>Tic-Tac-Toe</h1>
-      <TicTacToeBoard />
+      <TicTacToeGame />
     </div>
   );
 }

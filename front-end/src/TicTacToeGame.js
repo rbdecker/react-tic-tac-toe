@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import socketIoClient from 'socket.io-client';
 import TicTacToeBoard from './TicTacToeBoard';
 
 const getStartingMatrix = () => {
@@ -75,6 +76,15 @@ const TicTacToeGame = () => {
     const [playerXMoves, setPlayerXMoves] = useState(getStartingMatrix());
     const [playerOMoves, setPlayerOMoves] = useState(getStartingMatrix());
     const [currentGameState, setCurrentGameState] = useState(RUNNING);
+
+    const [socket, setSocket] = useState(null);
+
+    useEffect(() => {
+        let newSocket = socketIoClient('http://127.0.0.1:8080');
+        setSocket(newSocket);
+
+        return () => { newSocket.disconnect() };
+    }, []);
 
     useEffect(() => {
         const newGameState = getNextGameState(playerXMoves, playerOMoves);

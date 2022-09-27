@@ -9,6 +9,14 @@ td {
   font-size: 48px;
 }
 
+.empty-cell {
+  cursor: pointer;
+}
+
+.empty-cell:hover {
+  background-color: #eee;
+}
+
 .vertical-lines {
   border-left: 3px solid black;
   border-right: 3px solid black;
