@@ -83,6 +83,10 @@ const TicTacToeGame = () => {
         let newSocket = socketIoClient('http://127.0.0.1:8080');
         setSocket(newSocket);
 
+        newSocket.on('info', data => {
+            alert(data);
+        });
+
         return () => { newSocket.disconnect() };
     }, []);
 
