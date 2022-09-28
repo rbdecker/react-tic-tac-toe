@@ -115,18 +115,7 @@ const TicTacToeGame = () => {
     }
 
     const handleTurn = (row, column) => {
-        console.log('Handling...');
-        if (currentPlayer === 'X') {
-            const newMoves = [...playerXMoves];
-            newMoves[row][column] = 1;
-            setPlayerXMoves(newMoves);
-        } else {
-            const newMoves = [...playerOMoves];
-            newMoves[row][column] = 1;
-            setPlayerOMoves(newMoves);
-        }
-
-        togglePlayer();
+        socket.emit('new move', row, column);
     }
 
     if (playerIsWaiting) {

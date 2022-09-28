@@ -8,6 +8,19 @@ let io = new Server(server, {
     }
 });
 
+const getStartingMatrix = () => {
+    return [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+    ]
+}
+
+let currentPlayer = 'X';
+
+let playerXMoves = getStartingMatrix();
+let playerOMoves = getStartingMatrix();
+
 let playerXSocket;
 let playerOSocket;
 
@@ -43,6 +56,20 @@ io.on('connection', socket => {
             };
         });
     }
+
+    socket.on('new move', (row, column) => {
+        if (currentPlayer === 'X' && socket === playerXSocket) {
+            playerXMoves[row][column] = 1;
+            currentPlayer = 'O';
+            playerOSocket.emit('your turn');
+            playerXSocket.emit('other player turn');    
+        } else if (currentPlayer === 'O' && socket === playerOSocket) {
+            playerOMoves[row][column] = 1;
+            currentPlayer = 'X';
+            playerXSocket.emit('your turn');
+            playerOSocket.emit('other player turn');
+        }
+    });
 });
 
 server.listen(8080, () => {
