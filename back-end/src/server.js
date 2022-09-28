@@ -1,7 +1,26 @@
 import http from 'http';
+import express from 'express';
+import path from 'path';
 import { Server } from 'socket.io';
+import getNextGameState from './getNextGameState.js';
+import {
+    RUNNING,
+    PLAYER_X_WINS,
+    PLAYER_O_WINS,
+    CATS_GAME,
+} from './gameStates.js';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-let server = http.createServer();
+let expressApp = express();
+
+expressApp.use(express.static(path.join(__dirname, '../../front-end/build/')));
+expressApp.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../front-end/build/index.html'));
+});
+
+let server = http.createServer(expressApp);
 let io = new Server(server, {
     cors: {
         origin: '*',        
