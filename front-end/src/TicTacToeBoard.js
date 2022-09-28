@@ -18,7 +18,6 @@ const TicTacToeBoard = ({
 
     return (
         <>
-        <h1>Tic-Tac-Toe</h1>
         <table>
             <tbody>
                 {[0, 1, 2].map(row => (

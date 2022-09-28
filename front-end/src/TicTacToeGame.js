@@ -78,6 +78,8 @@ const TicTacToeGame = () => {
     const [currentGameState, setCurrentGameState] = useState(RUNNING);
 
     const [socket, setSocket] = useState(null);
+    const [playerIsWaiting, setPlayerIsWaiting] = useState(true);
+    const [isPlayersTurn, setIsPlayersTurn] = useState(false);
 
     useEffect(() => {
         let newSocket = socketIoClient('http://127.0.0.1:8080');
@@ -85,6 +87,19 @@ const TicTacToeGame = () => {
 
         newSocket.on('info', data => {
             alert(data);
+        });
+
+        newSocket.on('start', () => {
+            setPlayerIsWaiting(false);
+            //alert('Both players are ready, starting the game...');
+        });
+
+        newSocket.on('other player turn', () => {
+            setIsPlayersTurn(false);
+        });
+
+        newSocket.on('your turn', () => {
+            setIsPlayersTurn(true);
         });
 
         return () => { newSocket.disconnect() };
@@ -114,6 +129,10 @@ const TicTacToeGame = () => {
         togglePlayer();
     }
 
+    if (playerIsWaiting) {
+        return <h1>Waiting for another player to join...</h1>
+    }
+
     if (currentGameState === PLAYER_X_WINS) {
         return <h1>Player X Wins!!</h1>;
     }
@@ -128,11 +147,14 @@ const TicTacToeGame = () => {
 
     return (
         <>
+        <h1>Tic-Tac-Toe</h1>
         <TicTacToeBoard
             playerXMoves={playerXMoves}
             playerOMoves={playerOMoves}
             onClickCell={handleTurn} />
-        <h3>It is Player {currentPlayer}'s turn</h3>
+        {isPlayersTurn 
+            ? <h3>It's your turn</h3>
+            : <h3>Waiting for the other player's input...</h3>}
         </>
     );
 }

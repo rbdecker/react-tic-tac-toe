@@ -14,8 +14,10 @@ let playerOSocket;
 io.on('connection', socket => {
     if (playerXSocket) {
         playerOSocket = socket;
-        playerOSocket.emit('info', 'You are the second player, the game will now start!');
-        playerXSocket.emit('info', 'The second player has joined, the game will now start');
+        playerOSocket.emit('start');
+        playerXSocket.emit('start');
+        playerOSocket.emit('other player turn');
+        playerXSocket.emit('your turn');
         console.log('Player O has joined! Starting the game...');
 
         socket.on('disconnect', () => {
@@ -29,7 +31,6 @@ io.on('connection', socket => {
         });        
     } else {
         playerXSocket = socket;
-        playerXSocket.emit('info', 'You are the first player, waiting for the second player to join...');
         console.log('Player X has joined! Waiting for player O');
 
         socket.on('disconnect', () => {
