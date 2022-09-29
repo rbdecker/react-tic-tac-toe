@@ -25,9 +25,9 @@ const TicTacToeBoard = ({
                         {[0, 1, 2].map(column => (
                             <td 
                                 key={`${row},${column}`}
-                                className={`${cellStyles[row][column]} {spaceIsTaken} empty-cell`} 
+                                className={`${cellStyles[row][column]} ${spaceIsTaken(row, column) || !onClickCell ? '' : 'empty-cell'}`} 
                                 onClick={() => {
-                                    if (!spaceIsTaken(row, column) && onClickCell(row, column)) {
+                                    if (!spaceIsTaken(row, column) && onClickCell) {
                                         onClickCell(row, column);
                                     }
                                 }}
@@ -41,32 +41,7 @@ const TicTacToeBoard = ({
             </tbody>
         </table>
         </>
-    )
-
-    // return (
-    //     <>
-    //     <table>
-    //         <tbody>
-    //             <tr>
-    //                 <td onClick={() => handleTurn(0 , 0)}></td>
-    //                 <td className="vertical-lines"></td>
-    //                 <td></td>
-    //             </tr>
-    //             <tr>
-    //                 <td className="horizontal-lines"></td>
-    //                 <td className="vertical-lines horizontal-lines">O</td>
-    //                 <td className="horizontal-lines"></td>
-    //             </tr>
-    //             <tr>
-    //                 <td></td>
-    //                 <td className="vertical-lines"></td>
-    //                 <td>X</td>
-    //             </tr>
-    //         </tbody>
-    //     </table>
-    //     <h3>It is Player {currentPlayer}'s turn</h3>
-    //     </>
-    // );
+    );
 }
 
 export default TicTacToeBoard;

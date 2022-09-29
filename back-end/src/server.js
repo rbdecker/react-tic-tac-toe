@@ -80,17 +80,47 @@ io.on('connection', socket => {
         if (currentPlayer === 'X' && socket === playerXSocket) {
             playerXMoves[row][column] = 1;
             currentPlayer = 'O';
-            playerOSocket.emit('your turn');
-            playerXSocket.emit('other player turn');    
         } else if (currentPlayer === 'O' && socket === playerOSocket) {
             playerOMoves[row][column] = 1;
             currentPlayer = 'X';
-            playerXSocket.emit('your turn');
-            playerOSocket.emit('other player turn');
+        }
+
+        const nextGameState = getNextGameState(playerXMoves, playerOMoves);
+
+        playerOSocket.emit('updated moves',  playerXMoves, playerOMoves);
+        playerXSocket.emit('updated moves', playerXMoves, playerOMoves);
+
+        if (nextGameState === RUNNING) {
+            let currentPlayerSocket = currentPlayer === 'X'
+                ? playerXSocket
+                : playerOSocket;
+            let otherPlayerSocket = currentPlayer === 'X'
+                ? playerOSocket
+                : playerXSocket;
+
+            currentPlayerSocket.emit('your turn');
+            otherPlayerSocket.emit('other player turn');
+        }
+
+        if (nextGameState === PLAYER_X_WINS) {
+            playerXSocket.emit('win');
+            playerOSocket.emit('lose');
+        }
+
+        if (nextGameState === PLAYER_O_WINS) {
+            playerXSocket.emit('lose');
+            playerOSocket.emit('win');
+        }
+
+        if (nextGameState === CATS_GAME) {
+            playerXSocket.emit('tie');
+            playerOSocket.emit('tie');
         }
     });
 });
 
-server.listen(8080, () => {
-    console.log('Server is listening on port 8080');
+const PORT = process.env.PORT || 8080;
+
+server.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
 });
