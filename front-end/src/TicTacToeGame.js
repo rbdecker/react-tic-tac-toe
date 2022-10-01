@@ -10,7 +10,7 @@ const getStartingMatrix = () => {
     ]
 }
 
-const TicTacToeGame = ({ isHost }) => {
+    const TicTacToeGame = ({ isHost, gameId }) => {
     const [playerXMoves, setPlayerXMoves] = useState(getStartingMatrix());
     const [playerOMoves, setPlayerOMoves] = useState(getStartingMatrix());
     const [playerIsWinner, setPlayerIsWinner] = useState(false);
@@ -20,14 +20,17 @@ const TicTacToeGame = ({ isHost }) => {
     const [socket, setSocket] = useState(null);
     const [playerIsWaiting, setPlayerIsWaiting] = useState(true);
     const [isPlayersTurn, setIsPlayersTurn] = useState(false);
-    const [gameId, setGameId] = useState('');
+    const [createdGameId, setCreatedGameId] = useState('');
 
     useEffect(() => {
         const serverUrl = process.env.NODE_ENV === 'development'
             ? 'http://127.0.0.1:8080'
             : 'https://react-tic-tac-toe-rbdecker.herokuapp.com/'
         let newSocket = socketIoClient(serverUrl, {
-            query: { shouldCreateGame: isHost },
+            query: { 
+                shouldCreateGame: isHost ? true : '',
+                gameId,
+            },
         });
         setSocket(newSocket);
 
@@ -40,7 +43,7 @@ const TicTacToeGame = ({ isHost }) => {
         });
 
         newSocket.on('gameId', gameId => {
-            setGameId(gameId);
+            setCreatedGameId(gameId);
         });
 
         newSocket.on('other player turn', () => {
@@ -79,7 +82,7 @@ const TicTacToeGame = ({ isHost }) => {
         return (
             <>
             <h1>Waiting for another player to join...</h1>
-            {gameId && <h3>The game id is: {gameId}</h3>}
+            {createdGameId && <h3>The game id is: {createdGameId}</h3>}
             </>
         );
     }

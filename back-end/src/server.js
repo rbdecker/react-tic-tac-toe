@@ -51,13 +51,21 @@ function createNewGame(isAutoJoin) {
 }
 
 io.on('connection', socket => {
-    const { shouldCreateGame } = socket.handshake.query;
-    const gameWithOnePlayer = Object.values(gamesInProgress)
+    const { shouldCreateGame, gameId } = socket.handshake.query;
+    console.log({ shouldCreateGame, gameId });
+
+    let existingGame;
+
+    if (gameId) {
+        existingGame = gamesInProgress[gameId];
+    } else {
+        existingGame = Object.values(gamesInProgress)
         .find(game => game.isAutoJoin && game.playerXSocket && !game.playerOSocket);
+    }
     let game;
 
-    if (gameWithOnePlayer && !shouldCreateGame) {
-        game = gameWithOnePlayer;
+    if (existingGame && !shouldCreateGame) {
+        game = existingGame;
         game.playerOSocket = socket;
         game.playerOSocket.emit('start');
         game.playerXSocket.emit('start');
@@ -79,7 +87,7 @@ io.on('connection', socket => {
     } else {
         const newGame = createNewGame(!shouldCreateGame);
         gamesInProgress[newGame.id] = newGame;
-        
+
         if (shouldCreateGame) {
             socket.emit('gameId', newGame.id);
         }        
