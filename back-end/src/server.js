@@ -14,9 +14,17 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+let gamesInProgress = {};
+let previousGames = [];
+
 let expressApp = express();
 
 expressApp.use(express.static(path.join(__dirname, '../../front-end/build/')));
+
+expressApp.get('/previous-games', (req, res) => {
+    res.json(previousGames);
+});
+
 expressApp.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../front-end/build/index.html'));
 });
@@ -35,9 +43,6 @@ const getStartingMatrix = () => {
         [0, 0, 0],
     ]
 }
-
-let gamesInProgress = {};
-let previousGames = [];
 
 function createNewGame(isAutoJoin) {
     return {

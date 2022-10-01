@@ -18,6 +18,12 @@ td {
   font-size: 48px;
 }
 
+.previous-list-item td {
+  height: 60px;
+  width: 60px;
+  font-size: 24px;
+}
+
 .empty-cell {
   cursor: pointer;
 }

@@ -1,11 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
 import TicTacToeGame from './TicTacToeGame';
+import PreviousGamesList from './PreviousGamesList';
 
 function App() {
   const [gameMode, setGameMode] = useState('');
   const [gameIdText, setGameIdText] = useState('');
   const [gameId, setGameId] = useState('');
+
+  const [previousGames, setPreviousGames] = useState([]);
+
+  useEffect(() => {
+    const loadPreviousGames = async () => {
+      const response = await axios.get('/previous-games');
+      const previousGames = response.data;
+      console.log(previousGames);
+      setPreviousGames(previousGames);      
+    }
+
+    loadPreviousGames();
+  }, []);
 
   return (
     <div className="content-container">
@@ -32,6 +47,7 @@ function App() {
           </>
         )
       )}
+      <PreviousGamesList games={previousGames} />
     </div>
   );
 }
