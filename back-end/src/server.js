@@ -37,6 +37,7 @@ const getStartingMatrix = () => {
 }
 
 let gamesInProgress = {};
+let previousGames = [];
 
 function createNewGame(isAutoJoin) {
     return {
@@ -51,8 +52,8 @@ function createNewGame(isAutoJoin) {
 }
 
 io.on('connection', socket => {
-    const { shouldCreateGame, gameId } = socket.handshake.query;
-    console.log({ shouldCreateGame, gameId });
+    const { shouldCreateGame, gameId : gameIdString } = socket.handshake.query;
+    const gameId = gameIdString === 'undefined' ? undefined : gameIdString;
 
     let existingGame;
 
@@ -147,24 +148,26 @@ io.on('connection', socket => {
         if (nextGameState === PLAYER_X_WINS) {
             playerXSocket.emit('win');
             playerOSocket.emit('lose');
-            playerXSocket.disconnect();
-            playerOSocket.disconnect();
-            delete gamesInProgress[game.id];
         }
 
         if (nextGameState === PLAYER_O_WINS) {
             playerXSocket.emit('lose');
             playerOSocket.emit('win');
-            playerXSocket.disconnect();
-            playerOSocket.disconnect();
-            delete gamesInProgress[game.id];
         }
 
         if (nextGameState === CATS_GAME) {
             playerXSocket.emit('tie');
             playerOSocket.emit('tie');
+        }
+
+        if ([PLAYER_X_WINS, PLAYER_O_WINS, CATS_GAME].includes(nextGameState)) {
             playerXSocket.disconnect();
             playerOSocket.disconnect();
+            previousGames.push({
+                id: game.id,
+                playerXMoves,
+                playerOMoves,
+            });
             delete gamesInProgress[game.id];
         }
     });
