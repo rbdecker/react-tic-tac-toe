@@ -15,6 +15,7 @@ function App() {
         </>
       )}
       {gameMode === 'auto' && <TicTacToeGame />}
+      {gameMode === 'host' && <TicTacToeGame isHost />}
     </div>
   );
 }

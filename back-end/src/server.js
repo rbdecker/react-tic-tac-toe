@@ -38,7 +38,7 @@ const getStartingMatrix = () => {
 
 let gamesInProgress = {};
 
-function createNewGame() {
+function createNewGame(isAutoJoin) {
     return {
         id: uuid(),
         playerXSocket: null,
@@ -46,14 +46,17 @@ function createNewGame() {
         playerXMoves: getStartingMatrix(),
         playerOMoves: getStartingMatrix(),
         currentPlayer: 'X',
+        isAutoJoin,
     };
 }
 
 io.on('connection', socket => {
-    const gameWithOnePlayer = Object.values(gamesInProgress).find(game => game.playerXSocket && !game.playerOSocket);
+    const { shouldCreateGame } = socket.handshake.query;
+    const gameWithOnePlayer = Object.values(gamesInProgress)
+        .find(game => game.isAutoJoin && game.playerXSocket && !game.playerOSocket);
     let game;
 
-    if (gameWithOnePlayer) {
+    if (gameWithOnePlayer && !shouldCreateGame) {
         game = gameWithOnePlayer;
         game.playerOSocket = socket;
         game.playerOSocket.emit('start');
@@ -74,8 +77,12 @@ io.on('connection', socket => {
             delete gamesInProgress[game.id];
         });        
     } else {
-        const newGame = createNewGame();
+        const newGame = createNewGame(!shouldCreateGame);
         gamesInProgress[newGame.id] = newGame;
+        
+        if (shouldCreateGame) {
+            socket.emit('gameId', newGame.id);
+        }        
 
         newGame.playerXSocket = socket;
         console.log(`Player X has joined game ${newGame.id}! Waiting for player O`);
